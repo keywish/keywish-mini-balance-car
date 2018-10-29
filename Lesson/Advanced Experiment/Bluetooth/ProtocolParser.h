@@ -4,7 +4,7 @@
 #include "Protocol.h"
 #include <stdint.h>
 
-#define BUFFER_SIZE 24
+#define BUFFER_SIZE 100
 
 class ProtocolParser
 {
@@ -17,14 +17,17 @@ public:
     E_TYPE GetRobotType();
     uint8_t GetRobotAddr();
     E_CONTOROL_FUNC GetRobotControlFun();
+    byte GetControlMode();
     int GetRobotSpeed();
     int GetRobotDegree();
+    byte GetRobotDirection();
+    long GetRgbValue(void);
     bool SendPackage(ST_PROTOCOL *send_dat,int len);
+	int GetPianoSing();
 
 private:
     byte buffer[BUFFER_SIZE];
     byte m_StartCode, m_EndCode;
-    bool recflag;
     ST_PROTOCOL *recv;
     uint8_t protocol_data_len;
     bool m_recv_flag, m_send_success;   // recevive flag

@@ -6,13 +6,15 @@
 
 typedef enum
 {
-    E_BLUTOOTH_CONTROL = 0,
+    E_BLUETOOTH_CONTROL = 0,
     E_INFRARED_REMOTE_CONTROL,
     E_INFRARED_TRACKING_MODE,
-    E_INFRARED_AVOIDANCE,
+    E_INFRARED_AVOIDANCE_MODE,
     E_ULTRASONIC_AVOIDANCE,
     E_PS2_REMOTE_CONTROL,
     E_NRF24L01_CONTROL,
+    E_ULTRASONIC_INFRARED_AVOIDANCE,
+    E_PIANO_MODE,
     E_SMARTCAR_CONTROL_MAX,
 } E_SMARTCAR_CONTROL_MODE;
 
@@ -22,10 +24,14 @@ typedef enum
     E_BACK,
     E_LEFT,
     E_RIGHT,
+    E_LEFT_ROTATE,
+    E_RIGHT_ROTATE,
     E_STOP,
+    E_RUNNING,
     E_SPEED_UP,
     E_SPEED_DOWN,
     E_LOW_POWER,
+    E_MAX_STATUS,
 } E_SMARTCAR_STATUS;
 
 class SmartCar {
@@ -37,7 +43,7 @@ private :
     E_SMARTCAR_CONTROL_MODE mControlMode;
     E_SMARTCAR_STATUS mStatus;
 public :
-    SmartCar(String name, byte type, byte addr, E_SMARTCAR_CONTROL_MODE control_mode = E_BLUTOOTH_CONTROL);
+    SmartCar(String name, byte type, byte addr, E_SMARTCAR_CONTROL_MODE control_mode = E_BLUETOOTH_CONTROL);
     ~SmartCar();
     uint8_t BatteryValue;
     uint8_t Temperature;
