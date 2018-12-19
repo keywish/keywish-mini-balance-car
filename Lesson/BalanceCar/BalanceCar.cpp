@@ -522,7 +522,7 @@ void BalanceCar::ReportAllInfo()
         TurnPid,
          // (byte)UltrasonicDistance,
         (short int)MotorRightPwm,
-        (byte)MotorLeftPwm,
+        (short int)MotorLeftPwm,
     };
     info.Temperature = mpu.getTemperature()/340 + 36.53;
     info.Inclination = mKalFilter.angle;

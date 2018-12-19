@@ -69,7 +69,7 @@ typedef struct
     ST_PID turn;
    // byte UltrasonicDistance;
     short int MotorRightPwm;
-    byte MotorLeftPwm;
+    short int MotorLeftPwm;
     float Temperature;
     float Inclination;
     float ax;   // g
