@@ -1,89 +1,6 @@
 
 #include "RGBLed.h"
 
-#ifdef ME_PORT_DEFINED
-/**
- * Alternate Constructor which can call your own function to map the RGBLed to arduino port,
- * no pins are used or initialized here, it only assigned the LED display buffer. The default
- *number of light strips is 32.
- * \param[in]
- *   None
- */
-RGBLed::RGBLed(void) : MePort()
-{
-  setNumber(DEFAULT_MAX_LED_NUMBER);
-}
-
-/**
- * Alternate Constructor which can call your own function to map the RGBLed to arduino port,
- * it will assigned the LED display buffer and initialization the GPIO of LED lights. The slot2
- * will be used here, and the default number of light strips is 32.
- * \param[in]
- *   port - RJ25 port from PORT_1 to M2
- */
-RGBLed::RGBLed(uint8_t port) : MePort(port)
-{
-  pinMask       = digitalPinToBitMask(s2);
-  ws2812_port   = portOutputRegister(digitalPinToPort(s2) );
-  //set pinMode OUTPUT
-  pinMode(s2, OUTPUT);
-  setNumber(DEFAULT_MAX_LED_NUMBER);
-  _port = port;
-  _slot = SLOT2;
-}
-
-/**
- * Alternate Constructor which can call your own function to map the RGBLed to arduino port,
- * it will assigned the LED display buffer and initialization the GPIO of LED lights. The slot2
- * will be used here, you can reset the LED number by this constructor.
- * \param[in]
- *   port - RJ25 port from PORT_1 to M2
- * \param[in]
- *   led_num - The LED number
- */
-RGBLed::RGBLed(uint8_t port, uint8_t led_num) : MePort(port)
-{
-  pinMask       = digitalPinToBitMask(s2);
-  ws2812_port   = portOutputRegister(digitalPinToPort(s2) );
-  //set pinMode OUTPUT */
-  pinMode(s2, OUTPUT);
-  setNumber(led_num);
-  _port = port;
-  _slot = SLOT2;
-}
-
-/**
- * Alternate Constructor which can call your own function to map the RGBLed to arduino port,
- * it will assigned the LED display buffer and initialization the GPIO of LED lights. You can
- * set any slot for the LED data PIN, and reset the LED number by this constructor.
- * \param[in]
- *   port - RJ25 port from PORT_1 to M2
- * \param[in]
- *   slot - SLOT1 or SLOT2
- * \param[in]
- *   led_num - The LED number
- */
-RGBLed::RGBLed(uint8_t port, uint8_t slot, uint8_t led_num) : MePort(port)
-{
-  if(slot == SLOT1)
-  {
-    pinMask     = digitalPinToBitMask(s1);
-    ws2812_port = portOutputRegister(digitalPinToPort(s1) );
-    // set pinMode OUTPUT */
-    pinMode(s1, OUTPUT);
-  }
-  else
-  {
-    pinMask     = digitalPinToBitMask(s2);
-    ws2812_port = portOutputRegister(digitalPinToPort(s2) );
-    // set pinMode OUTPUT */
-    pinMode(s2, OUTPUT);
-  }
-  setNumber(led_num);
-  _port = port;
-  _slot = slot;
-}
-#else // ME_PORT_DEFINED
 /**
  * Alternate Constructor which can call your own function to map the RGBLed to arduino port,
  * it will assigned the LED display buffer and initialization the GPIO of LED lights. You can
@@ -117,74 +34,7 @@ RGBLed::RGBLed(uint8_t port, uint8_t led_num)
   pinMode(port, OUTPUT);
   setNumber(led_num);
 }
-#endif // ME_PORT_DEFINED
 
-#ifdef ME_PORT_DEFINED
-/**
- * \par Function
- *   reset
- * \par Description
- *   Reset the LED available data PIN by its RJ25 port, and slot2 will be used as default.
- * \param[in]
- *   port - RJ25 port from PORT_1 to M2
- * \par Output
- *   None
- * \return
- *   None
- * \par Others
- *   None
- */
-void RGBLed::reset(uint8_t port)
-{
-  _port = port;
-  _slot = SLOT2;
-  s2    = mePort[port].s2;
-  s1    = mePort[port].s1;
-  setColor(0,0,0,0);
-  fillPixelsBak(0,2,1);
-  pinMask = digitalPinToBitMask(s2);
-  ws2812_port = portOutputRegister(digitalPinToPort(s2) );
-  pinMode(s2, OUTPUT);
-}
-
-/**
- * \par Function
- *   reset
- * \par Description
- *   Reset the LED available data PIN by its RJ25 port and slot.
- * \param[in]
- *   port - RJ25 port from PORT_1 to M2
- * \param[in]
- *   slot - SLOT1 or SLOT2
- * \par Output
- *   None
- * \return
- *   None
- * \par Others
- *   None
- */
-void RGBLed::reset(uint8_t port,uint8_t slot)
-{
-  _port = port;
-  _slot = slot;
-  s2    = mePort[port].s2;
-  s1    = mePort[port].s1;
-  setColor(0,0,0,0);
-  fillPixelsBak(0,2,1);
-  if(SLOT2 == slot)
-  {
-    pinMask     = digitalPinToBitMask(s2);
-    ws2812_port = portOutputRegister(digitalPinToPort(s2) );
-    pinMode(s2, OUTPUT);
-  }
-  else
-  {
-    pinMask     = digitalPinToBitMask(s1);
-    ws2812_port = portOutputRegister(digitalPinToPort(s1) );
-    pinMode(s1, OUTPUT);
-  }
-}
-#endif //ME_PORT_DEFINED
 /**
  * \par Function
  *   setpin
@@ -417,7 +267,7 @@ bool RGBLed::setColor(uint8_t index, uint8_t red, uint8_t green, uint8_t blue)
  */
 bool RGBLed::setColor(uint8_t red, uint8_t green, uint8_t blue)
 {
-  return(setColor(0, red, green, blue) );;
+  return(setColor(0, red, green, blue));
 }
 
 /**
@@ -437,30 +287,15 @@ bool RGBLed::setColor(uint8_t red, uint8_t green, uint8_t blue)
  */
 bool RGBLed::setColor(uint8_t index, long value)
 {
+  uint8_t red    = (value & 0xff0000) >> 16;
+  uint8_t green  = (value & 0xff00) >> 8;
+  uint8_t blue   = value & 0xff;
+
   if(index == 0)
   {
-    for(int16_t i = 0; i < count_led; i++)
-    {
-      uint8_t tmp    = index * 3;
-      uint8_t red    = (value & 0xff0000) >> 16;
-      uint8_t green  = (value & 0xff00) >> 8;
-      uint8_t blue   = value & 0xff;
-      pixels[tmp]    = green;
-      pixels[tmp + 1] = red;
-      pixels[tmp + 2] = blue;
-    }
-    return(true);
-  }
-  else if(index < count_led)
-  {
-    uint8_t tmp    = (index - 1) * 3;
-    uint8_t red    = (value & 0xff0000) >> 16;
-    uint8_t green  = (value & 0xff00) >> 8;
-    uint8_t blue   = value & 0xff;
-    pixels[tmp]    = green;
-    pixels[tmp + 1] = red;
-    pixels[tmp + 2] = blue;
-    return(true);
+      return(setColor(0, red, green, blue));
+  } else if(index <= count_led) {
+      return(setColor(index, red, green, blue));
   }
   return(false);
 }
@@ -660,4 +495,3 @@ RGBLed::~RGBLed(void)
   free(pixels_bak);
   pixels_bak = NULL;
 }
-

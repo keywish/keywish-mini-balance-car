@@ -1,9 +1,9 @@
 #include "RGBLed.h"
-RGBLed rgbled_A3(7,A3);
+RGBLed rgbled_A3(A3, 2);
 void setup()
 {
-  rgbled_A3.setColor(1,255,255,255);
-	rgbled_A3.setColor(2,10,10,10);
+  rgbled_A3.setColor(1,0,0,255);
+  rgbled_A3.setColor(2,255,0,0);
   rgbled_A3.show();
 }
 

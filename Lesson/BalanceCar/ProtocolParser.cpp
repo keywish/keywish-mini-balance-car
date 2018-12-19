@@ -1,4 +1,3 @@
-#include "Protocol.h"
 #include "ProtocolParser.h"
 #define DEBUG_LEVEL DEBUG_LEVEL_ERR
 #include "debug.h"

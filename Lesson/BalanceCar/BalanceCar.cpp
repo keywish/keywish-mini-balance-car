@@ -7,22 +7,28 @@
 #include "debug.h"
 static volatile int EncoderRightPulse = 0, EncoderLeftPulse = 0;
 
+#if (EM_MOTOR_SHIELD_BOARD_VERSION < 3)
 BalanceCar::BalanceCar(ProtocolParser *Package, uint8_t ain1, uint8_t ain2, uint8_t pwma, uint8_t bin1, uint8_t bin2, uint8_t pwmb, uint8_t standby, uint8_t encoder_left, uint8_t encoder_right):SmartCar("Balance-Car", E_BALANCE_CAR, 0x01, E_BLUETOOTH_CONTROL)
+#else
+BalanceCar::BalanceCar(ProtocolParser *Package, uint8_t ain1, uint8_t pwma, uint8_t bin1, uint8_t pwmb, uint8_t encoder_left, uint8_t encoder_right):SmartCar("Balance-Car", E_BALANCE_CAR, 0x01, E_BLUETOOTH_CONTROL)
+#endif
 {
-	this->Ain1Pin = ain1;
-    this->Ain2Pin = ain2;
+	  this->Ain1Pin = ain1;
     this->PwmaPin = pwma;
     this->Bin1Pin = bin1;
-    this->Bin2Pin = bin2;
     this->PwmbPin = pwmb;
-    this->StandbyPin = standby;
     this->EncoderLeftPinA = encoder_left;
     this->EncoderRightPinA = encoder_right;
-    SetStatus(E_STOP);
-    mProtocolPackage = Package;
     EncoderRightPulse = 0;
     EncoderLeftPulse = 0;
     //ax = ay = az = gx = gy = gz = 0.0;
+#if (EM_MOTOR_SHIELD_BOARD_VERSION < 3)
+    this->Ain2Pin = ain2;
+    this->Bin2Pin = bin2;
+    this->StandbyPin = standby;
+#endif
+    SetStatus(E_STOP);
+    mProtocolPackage = Package;
 }
 
 BalanceCar::~BalanceCar()
@@ -53,28 +59,28 @@ void BalanceCar::init(void)
 {
     DEBUG_LOG(DEBUG_LEVEL_INFO, "initialize ......\n");
     //keep TB6612 AIN stop
-    pinMode(Ain1Pin, OUTPUT);
-    digitalWrite(Ain1Pin, LOW);
+#if (EM_MOTOR_SHIELD_BOARD_VERSION < 3)
     pinMode(Ain2Pin, OUTPUT);
     digitalWrite(Ain2Pin, LOW);
-    pinMode(PwmaPin, OUTPUT);
-    digitalWrite(PwmaPin, HIGH);
-
     //keep TB6612 BIN stop
-    pinMode(Bin1Pin, OUTPUT);
-    digitalWrite(Bin1Pin, LOW);
     pinMode(Bin2Pin, OUTPUT);
     digitalWrite(Bin2Pin, LOW);
-    pinMode(PwmbPin, OUTPUT);
-    digitalWrite(PwmbPin, HIGH);
-
     //keep TB6612 Standby
     pinMode(StandbyPin, OUTPUT);
     digitalWrite(StandbyPin, LOW);
-
+#endif
     //encoder pin input
-	  pinMode(EncoderLeftPinA, INPUT);
+    pinMode(Ain1Pin, OUTPUT);
+    digitalWrite(Ain1Pin, LOW);
+    pinMode(PwmaPin, OUTPUT);
+    digitalWrite(PwmaPin, 0);
+    pinMode(Bin1Pin, OUTPUT);
+    digitalWrite(Bin1Pin, LOW);
+    pinMode(PwmbPin, OUTPUT);
+    digitalWrite(PwmbPin, 0);
+    pinMode(EncoderLeftPinA, INPUT);
     pinMode(EncoderRightPinA, INPUT);
+    
     Wire.begin();
     delay(100);
     int32_t ax_zero = 0, ay_zero = 0, az_zero = 0, gx_zero =0 ,gy_zero = 0,gz_zero = 0;
@@ -123,13 +129,15 @@ void BalanceCar::GoBack(void)
 void BalanceCar::KeepStop(void)
 {
     DEBUG_LOG(DEBUG_LEVEL_INFO, "KeepStop\n");
-    digitalWrite(Ain1Pin, LOW);
+#if (EM_MOTOR_SHIELD_BOARD_VERSION < 3)
     digitalWrite(Ain2Pin, HIGH);
+    digitalWrite(Bin2Pin, HIGH);
+    digitalWrite(StandbyPin, HIGH);
+#endif
+    digitalWrite(Ain1Pin, LOW);
     digitalWrite(PwmaPin, LOW);
     digitalWrite(Bin1Pin, LOW);
-    digitalWrite(Bin2Pin, HIGH);
     digitalWrite(PwmbPin, LOW);
-    digitalWrite(StandbyPin, HIGH);
     SetStatus(E_STOP);
 }
 
@@ -172,25 +180,20 @@ void BalanceCar::SetPwm(int angleoutput, int speedoutput, int rotationoutput)
         }
     }
     if (MotorLeftPwm >= 0) {
-        digitalWrite(Bin2Pin, LOW);
-        digitalWrite(Bin1Pin, HIGH);
-        analogWrite(PwmbPin, MotorLeftPwm);
+        digitalWrite(Ain1Pin, HIGH);
+        analogWrite(PwmaPin, MotorLeftPwm);
     } else {
-        digitalWrite(Bin2Pin, HIGH);
-        digitalWrite(Bin1Pin, LOW);
-        analogWrite(PwmbPin, -MotorLeftPwm);
+        digitalWrite(Ain1Pin, LOW);
+        analogWrite(PwmaPin, -MotorLeftPwm);
     }
 
     if (MotorRightPwm >= 0) {
-        digitalWrite(Ain2Pin, LOW);
-        digitalWrite(Ain1Pin, HIGH);
-        analogWrite(PwmaPin, MotorRightPwm);
+        digitalWrite(Bin1Pin, LOW);
+        analogWrite(PwmbPin, MotorRightPwm);
     } else {
-        digitalWrite(Ain2Pin, HIGH);
-        digitalWrite(Ain1Pin, LOW);
-        analogWrite(PwmaPin, -MotorRightPwm);
+        digitalWrite(Bin1Pin, HIGH);
+        analogWrite(PwmbPin, -MotorRightPwm);
     }
-    digitalWrite(StandbyPin, HIGH);
 }
 
 double BalanceCar::BalancePwm(ST_PID pid,float Angle, float Gyro)
@@ -234,11 +237,11 @@ double BalanceCar::TurnPwm(ST_PID pid, float Gyroz)
     double turnout_put;
     Bias = Gyroz - 0;
     E_SMARTCAR_STATUS status = GetStatus();
-    turnout_put = -pid.p* Gyroz;
+    turnout_put = pid.p* Gyroz;
     if (E_RIGHT_ROTATE == status || E_RIGHT == status) {
-        turnout_put += 500;
+        turnout_put -= 350;
     } else if (E_LEFT_ROTATE == status || E_LEFT == status ){
-        turnout_put -= 500;
+        turnout_put += 350;
     }
     return turnout_put;
 }
@@ -510,7 +513,6 @@ void BalanceCar::Sing(byte songName)
        break;
     }
 }
-
 
 void BalanceCar::ReportAllInfo()
 {

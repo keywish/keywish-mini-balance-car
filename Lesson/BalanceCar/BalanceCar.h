@@ -17,28 +17,42 @@
 #define  AcceRatio 16384.0
 #define  GyroRatio  131.0
 
-#define BC_IR_PIN 8
+#define EM_MOTOR_SHIELD_BOARD_VERSION 3
+#if (EM_MOTOR_SHIELD_BOARD_VERSION < 3)
+    #define BC_IR_PIN 8
+    #define BC_AIN2_PIN 11
+    #define BC_BIN2_PIN 2
+    #define BC_ENCODER_L 13
+    #define BC_ENCODER_R 10
+    #define BC_STANBY_PIN 7
+    #define BC_SERVO_PIN 13
+    #define BC_ECHO_PIN A0
+    #define BC_TRIG_PIN A1
+    #define BC_PS2X_CLK A4
+    #define BC_PS2X_CMD A1
+    #define BC_PS2X_CS  A2
+    #define BC_PS2X_DAT A0
+#else
+    #define BC_ENCODER_L 7
+    #define BC_ENCODER_R 2
+    #define BC_IR_PIN 12
+    #define BC_SERVO_PIN 7
+    #define BC_ECHO_PIN A2
+    #define BC_TRIG_PIN A1
+    #define BC_PS2X_CLK 13
+    #define BC_PS2X_CMD 11
+    #define BC_PS2X_CS  10
+    #define BC_PS2X_DAT 12  
+    #define BC_CSN_PIN 8
+    #define BC_CE_PIN 10
+#endif
+
 #define BC_AIN1_PIN 3
-#define BC_AIN2_PIN 11
 #define BC_PWMA_PIN 5
 #define BC_BIN1_PIN 4
-#define BC_BIN2_PIN 2
 #define BC_PWMB_PIN 6
-#define BC_STANBY_PIN 7
-
-#define BC_ENCODER_L 13
-#define BC_ENCODER_R 10
-
 #define BC_RGB_PIN A3
 #define BC_BUZZER_PIN 9
-
-#define BC_ECHO_PIN A1
-#define BC_TRIG_PIN A0
-
-#define BC_PS2X_CLK A5
-#define BC_PS2X_CMD A1
-#define BC_PS2X_CS  A2
-#define BC_PS2X_DAT A0
 
 typedef enum
 {
@@ -46,7 +60,6 @@ typedef enum
     E_RGB_RIGHT = 1,
     E_RGB_LEFT = 2
 } E_RGB_INDEX;
-
 
 typedef struct
 {
@@ -67,7 +80,7 @@ typedef struct
     ST_PID balace;
     ST_PID speed;
     ST_PID turn;
-   // byte UltrasonicDistance;
+    // byte UltrasonicDistance;
     short int MotorRightPwm;
     short int MotorLeftPwm;
     float Temperature;
@@ -83,7 +96,10 @@ typedef struct
 class BalanceCar : public SmartCar {
 
 private :
-    uint8_t Ain1Pin, Ain2Pin, PwmaPin, Bin1Pin, Bin2Pin, PwmbPin, StandbyPin, EncoderLeftPinA, EncoderRightPinA;
+    uint8_t Ain1Pin, PwmaPin, Bin1Pin, PwmbPin, EncoderLeftPinA, EncoderRightPinA;
+  #if (EM_MOTOR_SHIELD_BOARD_VERSION < 3)
+    uint8_t Ain2Pin, Bin2Pin, StandbyPin;
+  #endif
     uint8_t EchoPin, TrigPin;
     uint8_t IrPin;      // Infrared remoter pin
     uint8_t BuzzerPin;  // Buzzer pin
@@ -91,7 +107,11 @@ private :
     uint8_t Ps2xClkPin, Ps2xCmdPin, Ps2xAttPin, Ps2xDatPin;    // for Ps2 remoter
     ProtocolParser *mProtocolPackage;
 public :
+#if (EM_MOTOR_SHIELD_BOARD_VERSION < 3)
     BalanceCar(ProtocolParser *Package, uint8_t ain1, uint8_t ain2, uint8_t pwma, uint8_t bin1, uint8_t bin2, uint8_t pwmb, uint8_t standby, uint8_t encoder_left, uint8_t encoder_right);
+#else
+    BalanceCar(ProtocolParser *Package, uint8_t ain1, uint8_t pwma, uint8_t bin1, uint8_t pwmb, uint8_t encoder_left, uint8_t encoder_right);
+#endif
     ~BalanceCar();
     IRremote *mIrRecv;
     PS2X *mPs2x;

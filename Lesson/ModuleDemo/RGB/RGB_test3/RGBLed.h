@@ -2,13 +2,15 @@
 #ifndef RGBLed_h
 #define RGBLed_h
 #include <Arduino.h>
-#include "MeConfig.h"
-
-#ifdef ME_PORT_DEFINED
-#include "MePort.h"
-#endif // ME_PORT_DEFINED
 
 #define DEFAULT_MAX_LED_NUMBER  (32)
+
+#define RGB_RED     0xFF0000
+#define RGB_GREEN   0x00FF00
+#define RGB_BLUE    0x0000FF
+#define RGB_YELLOW  0xFFFF00
+#define RGB_PURPLE  0xFF00FF
+#define RGB_WHITE   0xFFFFFF
 
 /// @brief Class for RGB Led Module
 struct cRGB
@@ -24,57 +26,11 @@ struct cRGB
  * \par Description
  * Declaration of Class RGBLed
  */
-#ifndef ME_PORT_DEFINED
+
 class RGBLed
-#else // !ME_PORT_DEFINED
-class RGBLed : public MePort
-#endif // !ME_PORT_DEFINED
 {
 public:
-#ifdef ME_PORT_DEFINED
-/**
- * Alternate Constructor which can call your own function to map the RGBLed to arduino port,
- * no pins are used or initialized here, it only assigned the LED display buffer. The default
- *number of light strips is 32.
- * \param[in]
- *   None
- */
-  RGBLed(void);
 
-/**
- * Alternate Constructor which can call your own function to map the RGBLed to arduino port,
- * it will assigned the LED display buffer and initialization the GPIO of LED lights. The slot2
- * will be used here, and the default number of light strips is 32.
- * \param[in]
- *   port - RJ25 port from PORT_1 to M2
- */
-  RGBLed(uint8_t port);
-
-/**
- * Alternate Constructor which can call your own function to map the RGBLed to arduino port,
- * it will assigned the LED display buffer and initialization the GPIO of LED lights. The slot2
- * will be used here, you can reset the LED number by this constructor.
- * \param[in]
- *   port - RJ25 port from PORT_1 to M2
- * \param[in]
- *   led_num - The LED number
- */
-  RGBLed(uint8_t port, uint8_t led_num);
-
-/**
- * Alternate Constructor which can call your own function to map the RGBLed to arduino port,
- * it will assigned the LED display buffer and initialization the GPIO of LED lights. You can
- * set any slot for the LED data PIN, and reset the LED number by this constructor.
- * \param[in]
- *   port - RJ25 port from PORT_1 to M2
- * \param[in]
- *   slot - SLOT1 or SLOT2
- * \param[in]
- *   led_num - The LED number
- */
-
-  RGBLed(uint8_t port, uint8_t slot, uint8_t led_num);
-#else //ME_PORT_DEFINED
 /**
  * Alternate Constructor which can call your own function to map the RGBLed to arduino port,
  * it will assigned the LED display buffer and initialization the GPIO of LED lights. You can
@@ -94,47 +50,12 @@ public:
  *   led_num - The LED number
  */
   RGBLed(uint8_t port, uint8_t led_num);
-#endif //ME_PORT_DEFINED
+
 /**
  * Destructor which can call your own function, it will release the LED buffer
  */
   ~RGBLed(void);
 
-#ifdef ME_PORT_DEFINED
-/**
- * \par Function 
- *   reset
- * \par Description
- *   Reset the LED available data PIN by its RJ25 port, and slot2 will be used as default.
- * \param[in]
- *   port - RJ25 port from PORT_1 to M2
- * \par Output
- *   None
- * \return
- *   None
- * \par Others
- *   None
- */
-  void reset(uint8_t port);
-
-/**
- * \par Function
- *   reset
- * \par Description
- *   Reset the LED available data PIN by its RJ25 port and slot.
- * \param[in]
- *   port - RJ25 port from PORT_1 to M2
- * \param[in]
- *   slot - SLOT1 or SLOT2
- * \par Output
- *   None
- * \return
- *   None
- * \par Others
- *   None
- */
-  void reset(uint8_t port,uint8_t slot);
-#endif //ME_PORT_DEFINED
 /**
  * \par Function
  *   setpin

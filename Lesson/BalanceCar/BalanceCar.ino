@@ -5,30 +5,14 @@
 #include "Sounds.h"
 #include "debug.h"
 
-#define IR_PIN 8
-
-#define AIN1_PIN 3
-#define AIN2_PIN 11
-#define PWMA_PIN 5
-
-#define BIN1_PIN 4
-#define BIN2_PIN 2
-#define PWMB_PIN 6
-#define STANBY_PIN 7
-
-#define ENCODER_L 13
-#define ENCODER_R 10
-
-#define BUZZER_PIN 9
-#define RGB_PIN 3
-
-#define ECHO_PIN A1
-#define TRIG_PIN A0
-
 ProtocolParser *mProtocol = new ProtocolParser();
-ST_PID BalancePid = {40, 0, -0.5 }, SpeedPid = {6.5, 0.61, 0}, TurnPid = {1, 0, 0};
+ST_PID BalancePid = {38, 0, 0.58 }, SpeedPid = {3.8, 0.11, 0}, TurnPid = {1.2, 0, 0};
 
-BalanceCar mBalanceCar(mProtocol, AIN1_PIN, AIN2_PIN, PWMA_PIN, BIN1_PIN, BIN2_PIN, PWMB_PIN, STANBY_PIN, ENCODER_L, ENCODER_R);
+#if (EM_MOTOR_SHIELD_BOARD_VERSION < 3)
+BalanceCar mBalanceCar(mProtocol, BC_AIN1_PIN, BC_AIN2_PIN, BC_PWMA_PIN, BC_BIN1_PIN, BC_BIN2_PIN, BC_PWMB_PIN, BC_STANBY_PIN, BC_ENCODER_L, BC_ENCODER_R);
+#else
+BalanceCar mBalanceCar(mProtocol, BC_AIN1_PIN, BC_PWMA_PIN, BC_BIN1_PIN, BC_PWMB_PIN, BC_ENCODER_L, BC_ENCODER_R);
+#endif
 byte Ps2xStatus, Ps2xType;
 ST_PID balance, speed, turn;
 
@@ -40,18 +24,19 @@ void autoBalance(void)
     static double speed_pwm = 0.0, turn_pwm = 0.0;
     mBalanceCar.CalculatePulse();
     mBalanceCar.mpu.getMotion6(&mBalanceCar.Accel.x, &mBalanceCar.Accel.y, &mBalanceCar.Accel.z, &mBalanceCar.Gyro.x, &mBalanceCar.Gyro.y, &mBalanceCar.Gyro.z);
-    mBalanceCar.mKalFilter.Angle_Y(mBalanceCar.Accel.x, mBalanceCar.Accel.y, mBalanceCar.Accel.z, mBalanceCar.Gyro.x, mBalanceCar.Gyro.y, mBalanceCar.Gyro.z);
+    mBalanceCar.mKalFilter.Angle_X(mBalanceCar.Accel.x, mBalanceCar.Accel.y, mBalanceCar.Accel.z, mBalanceCar.Gyro.x, mBalanceCar.Gyro.y, mBalanceCar.Gyro.z);
     // mBalanceCar.mKalFilter.Angle_Y(ax - mBalanceCar.AccelZeroOffsent.x, ay - mBalanceCar.AccelZeroOffsent.y, az-mBalanceCar.AccelZeroOffsent.z, gx - mBalanceCar.GyroZeroOffsent.x, gy - mBalanceCar.GyroZeroOffsent.y, gz - mBalanceCar.GyroZeroOffsent.z);
-    balance_pwm = mBalanceCar.BalancePwm(mBalanceCar.BalancePid, mBalanceCar.mKalFilter.angle, mBalanceCar.mKalFilter.Gyro_y);
+    balance_pwm = mBalanceCar.BalancePwm(mBalanceCar.BalancePid, mBalanceCar.mKalFilter.angle, mBalanceCar.mKalFilter.Gyro_x);
     count++;
     if (count == 4 || count == 8) {
-        turn_pwm = mBalanceCar.TurnPwm(mBalanceCar.TurnPid, mBalanceCar.mKalFilter.Gyro_z);
+       turn_pwm = mBalanceCar.TurnPwm(mBalanceCar.TurnPid, mBalanceCar.mKalFilter.Gyro_z);
     }
     if (count >= 8) {
         speed_pwm = mBalanceCar.SpeedPwm(mBalanceCar.SpeedPid, 0);
         count = 0;
     }
-    mBalanceCar.SetPwm(balance_pwm, speed_pwm, turn_pwm);
+   // Serial.println(mBalanceCar.mKalFilter.angle);
+   mBalanceCar.SetPwm(balance_pwm, speed_pwm, turn_pwm);
 }
 
 void setup()
@@ -61,10 +46,10 @@ void setup()
     mBalanceCar.SetControlMode(E_BLUETOOTH_CONTROL);
     mBalanceCar.SetStatus(E_RUNNING);
     mBalanceCar.init();
-    mBalanceCar.SetBuzzerPin(BUZZER_PIN);
-    mBalanceCar.SetIrPin(IR_PIN);
-    mBalanceCar.SetRgbPin(RGB_PIN);
-    mBalanceCar.SetUltrasonicPin(TRIG_PIN, ECHO_PIN);
+    mBalanceCar.SetBuzzerPin(BC_BUZZER_PIN);
+    mBalanceCar.SetIrPin(BC_IR_PIN);
+    mBalanceCar.SetRgbPin(BC_RGB_PIN);
+    mBalanceCar.SetUltrasonicPin(BC_TRIG_PIN, BC_ECHO_PIN);
     mBalanceCar.Sing(S_connection);
     Timer1.initialize(5000);
     Timer1.attachInterrupt(autoBalance); // 5ms attach the service routine here
