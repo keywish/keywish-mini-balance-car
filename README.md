@@ -6,8 +6,7 @@ The latest information download address: https://github.com/keywish/keywish-mini
 
 # Mini-balance-car
 ![](https://github.com/keywish/keywish-mini-balance-car/blob/master/Balance_car.jpg)
-# Component List
-![](https://github.com/keywish/keywish-mini-balance-car/blob/master/Component%20list.png)
+
 # Product Introduce
 “Mini-BalanceCar” is ATMEGA328P-PU as the main control chip, and TB6612FGN is used as a multi-functional crawler car for motor drive chip. Compared with the traditional car, "Tank" is also equipped with wireless control (Bluetooth, infrared remote control). It can automatically avoid obstacles. Of course, Maker can also add or subtract other functions through its own Idea, such as adding automatic tracking, PS2 gamepad, adding wifi control, robotic arm, etc.
 
