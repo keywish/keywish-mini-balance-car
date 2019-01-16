@@ -1,6 +1,7 @@
 #include "ProtocolParser.h"
 #define DEBUG_LEVEL DEBUG_LEVEL_ERR
 #include "debug.h"
+#include "SmartCar.h"
 
 #if ARDUINO > 10609
 ProtocolParser::ProtocolParser(byte startcode = PROTOCOL_START_CODE, byte endcode = PROTOCOL_END_CODE)

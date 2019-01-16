@@ -4,6 +4,7 @@
 #include "KeyMap.h"
 #include "Sounds.h"
 #include "debug.h"
+#include "SmartCar.h"
 
 
 #define AIN1_PIN 3
@@ -21,9 +22,11 @@
 #define BUZZER_PIN 9
 
 ProtocolParser *mProtocol = new ProtocolParser();
-
-
+#if (EM_MOTOR_SHIELD_BOARD_VERSION < 3)
 BalanceCar mBalanceCar(mProtocol, AIN1_PIN, AIN2_PIN, PWMA_PIN, BIN1_PIN, BIN2_PIN, PWMB_PIN, STANBY_PIN, ENCODER_L, ENCODER_R);
+#else
+BalanceCar mBalanceCar(mProtocol, AIN1_PIN,PWMA_PIN ,BIN1_PIN ,PWMB_PIN ,ENCODER_L , ENCODER_R );
+#endif
 byte Ps2xStatus, Ps2xType;
 ST_PID balance, speed, turn;
 

@@ -1,7 +1,7 @@
 #include "Buzzer.h"
 #include "RGBLed.h"
-#include "Servo.h"
-#include "IRremote.h"
+#include "Servo_test.h"
+#include "IR_remote.h"
 #include "Keymap.h"
 
 #define MOTOR_L2   4 //Bin1

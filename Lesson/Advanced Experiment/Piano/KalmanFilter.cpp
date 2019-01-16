@@ -61,13 +61,12 @@ void KalmanFilter::Kalman_Filter(double angle_m, double gyro_m,float dt,float Q_
 /*
     Get X inclination
 */
-void KalmanFilter::Angle_X(int16_t ax,int16_t ay,int16_t az,int16_t gx,int16_t gy,int16_t gz,float dt,float Q_angle,float Q_gyro,
-									float R_angle,float C_0,float K1)
+void KalmanFilter::Angle_X(int16_t ax,int16_t ay,int16_t az,int16_t gx,int16_t gy,int16_t gz)
 {
     // int flag;
     float Angle = atan2(ay , az) * 57.3;
     Gyro_x = (gx - 128.1) / 131;
-    Kalman_Filter(Angle, Gyro_x, dt, Q_angle, Q_gyro,R_angle,C_0);
+    Kalman_Filter(Angle, Gyro_x, dt, Q_angle, Q_gyro, R_angle, C_0); 
 
     if (gz > 32768) gz -= 65536;
     Gyro_z = -gz / 131;

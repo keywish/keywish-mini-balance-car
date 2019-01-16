@@ -22,7 +22,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.
  *
  */
-#include "Servo.h"
+#include "Servo_test.h"
 Servo myservo;  // create servo object to control a servo
 int pos = 90;    // variable to store the servo position
 void setup()
