@@ -23,10 +23,6 @@ The latest information download address: https://github.com/keywish/keywish-mini
 [Buy on Amazon](https://www.amazon.com/dp/B07GYKMPNS) </br>
 [Buy on Aliexpress](https://www.aliexpress.com/store/product/Balance-Cars-for-Arduino-UNO-R3-Super-Starter-Kit-APP-RC-Remote-Control-Ultrasonic-Bluetooth-Module/3269016_32931621415.html)
 
-# Video Links
-[Component Introduce](https://www.youtube.com/watch?v=kNJLsK0ktvg)</br>
-[Assembly](https://www.youtube.com/watch?v=GkZ6i4xQ3Gs)</br>
-[Function](https://www.youtube.com/watch?v=o56ZacrzPBY&t=8s)</br>
 
 # Download method
 ![](https://github.com/keywish/keywish-mini-balance-car/blob/master/Image.jpg)
